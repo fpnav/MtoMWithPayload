@@ -39,8 +39,9 @@ namespace ProfsCursoMtoM_WithPayload.Controllers
         // GET: Matriculas/Create
         public ActionResult Create()
         {
-            ViewBag.CursoId = new SelectList(db.Cursos, "CursoId", "Titulo");
-            ViewBag.ProfessorId = new SelectList(db.Professors, "ProfessorId", "Sobrenome");
+            var cursos = db.Cursos.ToList();
+            ViewBag.CursoId = new SelectList(cursos, "CursoId", "Titulo");
+            ViewBag.ProfessorId = new SelectList(db.Professors.ToList(), "ProfessorId", "Sobrenome");
             return View();
         }
 
@@ -49,11 +50,14 @@ namespace ProfsCursoMtoM_WithPayload.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "MatriculaId,CursoId,ProfessorId,Nota")] Matricula matricula)
+        public ActionResult Create(Matricula matricula, int CursoDD, int ProfessorDD)
         {
             if (ModelState.IsValid)
             {
-                db.Matriculas.Add(matricula);
+                var novaMatricula = new Matricula();
+                novaMatricula.CursoId = CursoDD;
+                novaMatricula.ProfessorId = ProfessorDD;
+                db.Matriculas.Add(novaMatricula);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
